@@ -27,6 +27,18 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# ns-3 simulator package ignore
+wireless_networking_ns3/ns-allinone-3.32/__pycache__/
+wireless_networking_ns3/ns-allinone-3.32/bake/
+wireless_networking_ns3/ns-allinone-3.32/netanim-3.108/
+wireless_networking_ns3/ns-allinone-3.32/pybindgen-0.21.0/
+# wireless_networking_ns3/ns-allinone-3.32/
+wireless_networking_ns3/ns-allinone-3.32/ns-3.32/*
+!wireless_networking_ns3/ns-allinone-3.32/ns-3.32/scratch
+!wireless_networking_ns3/ns-allinone-3.32/ns-3.32/examples
+# !wireless_networking_ns3/ns-allinone-3.32/ns-3.32/scratch/*
+
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.

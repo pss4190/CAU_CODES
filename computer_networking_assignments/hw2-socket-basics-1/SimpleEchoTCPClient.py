@@ -1,12 +1,13 @@
 #
 # SimpleEchoTCPClient.py
+# author : Seung Soo Park ( 20164435 )
 #
 
 from socket import *
 import time
 
 # 127.0.0.1 for localhost ( need to modify into nsl2.cau.ac.kr )
-serverName = '127.0.0.1'
+serverName = 'nsl2.cau.ac.kr'
 serverPort = 24435
 
 # function for option 1 : upper-case
@@ -67,6 +68,30 @@ def option_3() :
     print('\nReply from server:', received_message.decode())
     print('Response latency =', str((received_time-sending_time) * 1000), 'ms\n')
 
+# function for option 4 : server run time
+def option_4() :
+    # only sends user option value
+    # also get current time to calculate duration of sending/receiving moment
+    sending_time = time.time()
+    clientSocket.send("4".encode())
+
+    # receive result
+    # also get current time to calculate duration of sending/receiving moment
+    received_message = clientSocket.recv(2048)
+    received_time = time.time()
+
+    # print out results
+    print('\nReply from server:', received_message.decode())
+    print('Response latency =', str((received_time-sending_time) * 1000), 'ms\n')
+
+def option_5() :
+    # only sends user option value
+    # also get current time to calculate duration of sending/receiving moment
+    clientSocket.send("5".encode())
+
+    print("Bye Bye ~")
+    clientSocket.close()
+
 # initial establish connection to server
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
@@ -100,6 +125,11 @@ try :
             option_2()
         elif(client_option_value == 3) :
             option_3()
+        elif(client_option_value == 4) :
+            option_4()
+        elif(client_option_value == 5) :
+            option_5()
+            break
         else :
             print("inserted wrong option value. \ninsert again\n")
             continue
@@ -107,7 +137,8 @@ except KeyboardInterrupt :
     # close connection
     clientSocket.close()
     print("\nBye Bye~")
-except :
+except Exception as e:
     # handles all types of error
-    print("\n unexpected error occured on client. \nTerminate client side application.")
+    print("error name : ", e)
+    print("\nunexpected error occured on client. \nTerminate client side application.")
     clientSocket.close()

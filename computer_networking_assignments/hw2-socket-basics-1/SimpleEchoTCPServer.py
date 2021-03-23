@@ -1,10 +1,12 @@
 #
 # SimpleEchoTCPServer.py
+# author : Seung Soo Park ( 20164435 )
 #
 from socket import *
 from datetime import datetime
+import time
 
-# function declaration
+# function for option 1 : upper-case
 def option_1(received_message, option_value) :
     # print out requested client address
     print('Connection requested from', clientAddress)
@@ -15,6 +17,7 @@ def option_1(received_message, option_value) :
     # send modified message to client
     connectionSocket.send(modified_message.encode())
 
+# function for option 2 : reverse-order
 def option_2(received_message, option_value) :
     # print out requested client address
     print('Connection requested from', clientAddress)
@@ -30,6 +33,7 @@ def option_2(received_message, option_value) :
     # send modified message to client
     connectionSocket.send(modified_message.encode())
 
+# function for option 3 : client IP & port
 def option_3(option_value) :
     # print out requested client address
     print('Connection requested from', clientAddress)
@@ -45,16 +49,29 @@ def option_3(option_value) :
     # send message to client
     connectionSocket.send(modified_message.encode())
 
+# function for option 4 : server run time
 def option_4(option_value) :
     # print out requested client address
     print('Connection requested from', clientAddress)
     print('command', option_value)
 
     # get current time value so that can get run time
-    run_time = time.time() - initializing_time
+    print("time : ", (time.time() - initializing_time))
+    t_time = time.time() - initializing_time
+    run_time = time.strftime('%H:%M:%S', time.gmtime(t_time))
+    print("run_time created")
+    print("time : ", str(run_time))
+
+    connectionSocket.send(str(run_time).encode())
+
+def option_5(option_value) :
+    connectionSocket.close()
+    print("Bye Bye~")
+
 
 # time value to measure run time
-initializing_time = datetime.now()
+initializing_time = time.time()
+print(initializing_time)
 # server initializing acts
 serverPort = 24435
 serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -82,6 +99,11 @@ try :
             option_2(user_message, user_option)
         elif(user_option == 3) :
             option_3(user_option)
+        elif(user_option == 4) :
+            option_4(user_option)
+        elif(user_option == 5) :
+            option_5(user_option)
+            break
         else :
             print("client send wrong option. \n activation denied")
             continue
@@ -89,7 +111,8 @@ except KeyboardInterrupt :
     # close the connectioni
     connectionSocket.close()
     print("\nBye Bye~")
-except :
+except Exception as e:
     # handles all types of error
-    print("\n Unexpected error occured on server. \nTerminate server side application.")
+    print("error name : ", e)
+    print("\nUnexpected error occured on server. \nTerminate server side application.")
     connectionSocket.close()
