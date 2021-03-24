@@ -6,7 +6,7 @@
 from socket import *
 import time
 
-# 127.0.0.1 for localhost ( need to modify into nsl2.cau.ac.kr )
+# serverName = '127.0.0.1'
 serverName = 'nsl2.cau.ac.kr'
 serverPort = 24435
 
@@ -84,13 +84,17 @@ def option_4() :
     print('\nReply from server:', received_message.decode())
     print('Response latency =', str((received_time-sending_time) * 1000), 'ms\n')
 
+# function for option 5 : terminate client program
 def option_5() :
     # only sends user option value
     # also get current time to calculate duration of sending/receiving moment
-    clientSocket.send("5".encode())
-
+    # clientSocket.send("5".encode())
     print("Bye Bye ~")
     clientSocket.close()
+
+# function for configuring termination of server
+# def server_termination_detect() :
+
 
 # initial establish connection to server
 clientSocket = socket(AF_INET, SOCK_STREAM)
@@ -133,10 +137,20 @@ try :
         else :
             print("inserted wrong option value. \ninsert again\n")
             continue
+# need to fix : error does not caught directly after server shut down
+except error :
+    # when server is terminated, client program also terminates
+    # Due to the socket.error property(which detects error on send & recv),
+    # client is required to enter input so that can get socket.error message
+    clientSocket.close()
+    print("\nServer has been closed")
+    print("Terminates client program")
+
 except KeyboardInterrupt :
     # close connection
     clientSocket.close()
     print("\nBye Bye~")
+
 except Exception as e:
     # handles all types of error
     print("error name : ", e)
