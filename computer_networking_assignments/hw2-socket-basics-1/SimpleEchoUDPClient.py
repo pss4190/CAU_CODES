@@ -6,8 +6,8 @@
 from socket import *
 import time
 
-serverName = '127.0.0.1'
-# serverName = 'nsl2.cau.ac.kr'
+# serverName = '127.0.0.1'
+serverName = 'nsl2.cau.ac.kr'
 serverPort = 24435
 
 # function for option 1 : upper-case
@@ -96,7 +96,7 @@ def option_5() :
 # initial establish for socket
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 # set timeout to socket for 3s
-clientSocket.settimeout(3)
+clientSocket.settimeout(5)
 print("The client is running on port", clientSocket.getsockname()[1])
 
 # dictionary that contains offering functionalities
