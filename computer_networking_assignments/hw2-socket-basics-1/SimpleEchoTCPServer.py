@@ -5,11 +5,16 @@
 from socket import *
 from datetime import datetime
 import time
+import select
+
+serverPort = 24435
+socket_list = []
+BUFFER_SIZE = 2048
 
 # function for option 1 : upper-case
-def option_1(received_message, option_value) :
+def option_1(received_message, option_value, connectionSocket) :
     # print out requested client address
-    print('Connection requested from', clientAddress)
+    print('Connection requested from', connectionSocket.getpeername())
     print('command', option_value)
 
     # do action on received message
@@ -18,9 +23,9 @@ def option_1(received_message, option_value) :
     connectionSocket.send(modified_message.encode())
 
 # function for option 2 : reverse-order
-def option_2(received_message, option_value) :
+def option_2(received_message, option_value, connectionSocket) :
     # print out requested client address
-    print('Connection requested from', clientAddress)
+    print('Connection requested from', connectionSocket.getpeername())
     print('command', option_value)
 
     # do action on received message
@@ -34,14 +39,15 @@ def option_2(received_message, option_value) :
     connectionSocket.send(modified_message.encode())
 
 # function for option 3 : client IP & port
-def option_3(option_value) :
+def option_3(option_value, connectionSocket) :
     # print out requested client address
-    print('Connection requested from', clientAddress)
+    print('Connection requested from', connectionSocket.getpeername())
     print('command', option_value)
 
     # get client IP address & port number from clientAddress
-    client_ip = clientAddress[0]
-    client_port = clientAddress[1]
+    client_info = connectionSocket.getpeername()
+    client_ip = client_info[0]
+    client_port = client_info[1]
 
     modified_message = "client IP = " + str(client_ip) + ", port = " + str(client_port)
 
@@ -49,9 +55,9 @@ def option_3(option_value) :
     connectionSocket.send(modified_message.encode())
 
 # function for option 4 : server run time
-def option_4(option_value) :
+def option_4(option_value, connectionSocket) :
     # print out requested client address
-    print('Connection requested from', clientAddress)
+    print('Connection requested from', connectionSocket.getpeername())
     print('command', option_value)
 
     # get current time value so that can get run time
@@ -60,54 +66,69 @@ def option_4(option_value) :
 
     connectionSocket.send(str(run_time).encode())
 
+# server initializing acts
+serverSocket = socket(AF_INET, SOCK_STREAM)
+serverSocket.bind(('', serverPort))
+serverSocket.listen(5)
+
+# add serverSocket to socket_list
+socket_list.append(serverSocket)
+
+print("The server is ready to receive on port", serverPort)
 
 # time value to measure run time
 initializing_time = time.time()
-print(initializing_time)
-# server initializing acts
-serverPort = 24435
-serverSocket = socket(AF_INET, SOCK_STREAM)
-serverSocket.bind(('', serverPort))
-serverSocket.listen(1)
-
-print("The server is ready to receive on port", serverPort)
-# accept connection requeset from client
-(connectionSocket, clientAddress) = serverSocket.accept()
 
 try :
     while True :
-        # get message from client
-        socket_send_message = connectionSocket.recv(2048)
+        # get socket list through select
+        # so that can configure whether to accept new connection or just handle for incoming messages
+        read_sockets,write_sockets,error_sockets = select.select(socket_list,[],[])
 
-        # configure whether client is connected through message client sends
-        # if connected, ignore / if not connected, accept new connection
-        if(socket_send_message == b'') :
-            connectionSocket.close()
-            (connectionSocket, clientAddress) = serverSocket.accept() # global로의 승격 need.
-            continue
+        for sock_element in read_sockets :
+            # if serverSocket is readable ( = there is new connection request )
+            if sock_element == serverSocket :
+                # accept new connection and add socket to socket_list for handling opened connections
+                (new_connect_socket, new_client_addr) = serverSocket.accept()
+                socket_list.append(new_connect_socket)
+            # if connection sockets are readable ( = there is new received message for socket )
+            else :
+                try :
+                    # get message from client
+                    socket_send_message = sock_element.recv(BUFFER_SIZE)
 
-        # divide message into two pieces : user selection option, and user message
-        user_option = int(socket_send_message.decode()[0:1])
-        user_message = socket_send_message.decode()[1:]
+                    # divide message into selection option and actual message.
+                    user_option = int(socket_send_message.decode()[0:1])
+                    user_message = socket_send_message.decode()[1:]
 
-        if(user_option == 1) :
-            option_1(user_message, user_option)
-        elif(user_option == 2) :
-            option_2(user_message, user_option)
-        elif(user_option == 3) :
-            option_3(user_option)
-        elif(user_option == 4) :
-            option_4(user_option)
-        else :
-            print("client send wrong option. \n activation denied")
-            continue
+                    if(user_option == 1) :
+                        option_1(user_message, user_option, sock_element)
+                    elif(user_option == 2) :
+                        option_2(user_message, user_option, sock_element)
+                    elif(user_option == 3) :
+                        option_3(user_option, sock_element)
+                    elif(user_option == 4) :
+                        option_4(user_option, sock_element)
+                    else :
+                        print("client send wrong option. \n activation denied")
+                        continue
+                except Exception :
+                    # when client is closed, it disconnect connectionSocket
+                    print("client :", sock_element.getpeername(), "is disconnected")
+                    sock_element.close()
+                    socket_list.remove(sock_element)
+
 except KeyboardInterrupt :
     # close the connection
-    connectionSocket.close()
+    for sock_element in socket_list :
+        sock_element.close()
+    serverSocket.close()
     print("\nBye Bye~")
 
 except Exception as e:
     # handles all types of error
     print("error name : ", e)
     print("\nUnexpected error occured on server. \nTerminate server side application.")
-    connectionSocket.close()
+    for sock_element in socket_list :
+        sock_element.close()
+    serverSocket.close()

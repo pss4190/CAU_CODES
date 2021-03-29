@@ -88,7 +88,6 @@ def option_4() :
 def option_5() :
     # only sends user option value
     # also get current time to calculate duration of sending/receiving moment
-    # clientSocket.send("5".encode())
     print("Bye Bye ~")
     clientSocket.close()
 
@@ -137,7 +136,7 @@ try :
         else :
             print("inserted wrong option value. \ninsert again\n")
             continue
-# need to fix : error does not caught directly after server shut down
+        
 except error :
     # when server is terminated, client program also terminates
     # Due to the socket.error property(which detects error on send & recv),
@@ -151,7 +150,7 @@ except KeyboardInterrupt :
     clientSocket.close()
     print("\nBye Bye~")
 
-except Exception as e:
+except Exception as e :
     # handles all types of error
     print("error name : ", e)
     print("\nunexpected error occured on client. \nTerminate client side application.")

@@ -49,7 +49,7 @@ i = [ num * num for num in range(1, 10)]
 print(i) # shows [1, 4, 9, 16, 25, 36, 49, 64, 81]
 
 j = [ num for num in range(20) if num % 2 == 1]
-print(j) # shows [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+print("j : ", j) # shows [1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
 
 array_row = 3
 array_column = 4
