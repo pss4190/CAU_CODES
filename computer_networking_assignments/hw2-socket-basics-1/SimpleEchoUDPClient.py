@@ -118,8 +118,12 @@ try :
 
         # wait for user's selection input
         print("Input option: ", end=' ')
-        client_option_value = int(input())
-
+        try :
+            client_option_value = int(input())
+        except ValueError :
+            print("inserted wrong option value. \ninsert again\n")
+            continue
+        
         if(client_option_value == 1) :
             option_1()
         elif(client_option_value == 2) :
