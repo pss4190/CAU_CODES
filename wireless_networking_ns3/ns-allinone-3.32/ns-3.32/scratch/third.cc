@@ -95,14 +95,17 @@ main (int argc, char *argv[])
   wifiStaNodes.Create (nWifi);
   NodeContainer wifiApNode = p2pNodes.Get (0);
 
+  // wifi 계층 단위로 해서, 할당을 해주는 것. 이후, channel 생성하기.
   YansWifiChannelHelper channel = YansWifiChannelHelper::Default ();
   YansWifiPhyHelper phy = YansWifiPhyHelper::Default ();
   phy.SetChannel (channel.Create ());
 
+  // wifi의 값을 보거나 하는 manager를 할당해주는 부분.
   WifiHelper wifi;
   wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
 
-  // ssid : 무선 랜을 구분하기 위해 이용하는 mac 주소.
+  // ssid : 무선 랜을 식별하기 위해 이용하는 mac 주소.
+  // 무선 랜은 아래와 비슷하게 대부분 진행된다.
   WifiMacHelper mac;
   Ssid ssid = Ssid ("ns-3-ssid");
   mac.SetType ("ns3::StaWifiMac", // mac initialization
@@ -119,7 +122,7 @@ main (int argc, char *argv[])
   apDevices = wifi.Install (phy, mac, wifiApNode);
 
   MobilityHelper mobility; // "helper : 구체적인 값들을 설정해주기 위해 이용하는 객체."
-  // ㅔㅐ
+  // 모빌리티 설정 : 이동할 수 있기 때문에 움직이는 것처럼 설정해주는 것이다.
   mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", DoubleValue (0.0),
                                  "MinY", DoubleValue (0.0),
