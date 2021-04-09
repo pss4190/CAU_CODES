@@ -6,8 +6,8 @@
 from socket import *
 import time
 
-# serverName = '127.0.0.1'
-serverName = 'nsl2.cau.ac.kr'
+serverName = '127.0.0.1'
+# serverName = 'nsl2.cau.ac.kr'
 serverPort = 24435
 
 # function for option 1 : upper-case
