@@ -39,6 +39,11 @@ using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE ("ThirdScriptExample");
 
+void CourseChange (std::string context, Ptr<const MobilityModel> model) {
+  Vector position = model->GetPosition();
+  NS_LOG_UNCOND (context << " x = " << position.x << ", y = " << position.y);
+}
+
 int 
 main (int argc, char *argv[])
 {
@@ -170,6 +175,11 @@ main (int argc, char *argv[])
 
   ApplicationContainer clientApps = 
     echoClient.Install (wifiStaNodes.Get (nWifi - 1));
+
+  std::ostringstream oss;
+  oss<< "/NodeList/" << wifiStaNodes.Get(nWifi - 1)->GetId() << "/$ns3::MobilityModel/CourseChange";
+  Config::Connect(oss.str(), MakeCallback(&CourseChange));
+
   clientApps.Start (Seconds (2.0));
   clientApps.Stop (Seconds (10.0));
 
