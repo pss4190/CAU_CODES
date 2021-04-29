@@ -6,8 +6,8 @@
 from socket import *
 import time
 
-# serverName = '127.0.0.1'
-serverName = 'nsl2.cau.ac.kr'
+serverName = '127.0.0.1'
+# serverName = 'nsl2.cau.ac.kr'
 serverPort = 24435
 
 # function for option 1 : upper-case
@@ -118,8 +118,12 @@ try :
 
         # wait for user's selection input
         print("Input option: ", end=' ')
-        client_option_value = int(input())
-
+        try :
+            client_option_value = int(input())
+        except ValueError :
+            print("inserted wrong option value. \ninsert again\n")
+            continue
+        
         if(client_option_value == 1) :
             option_1()
         elif(client_option_value == 2) :
