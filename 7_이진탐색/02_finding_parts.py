@@ -1,24 +1,25 @@
-parts_stock_len = int(input())
-parts_stock = list(map(int, input().split()))
-parts_stock.sort()
+def binary_search (start, end, target, data_array) :
+    if start > end :
+        return None
+    mid = (start + end) // 2
+    if data_array[mid] == target :
+        return data_array[mid]
+    elif data_array[mid] < target :
+        return binary_search(mid + 1, end, target, data_array)
+    else :
+        return binary_search(start, mid - 1, target, data_array)
+        
 
-req_stock_len = int(input())
-req_stock = list(map(int, input().split()))
-
-print("start")
-
-result = []
-
-for search_target in req_stock :
-    start = 0
-    end = req_stock_len - 1
-    while start <= end :
-        if parts_stock[(start + end) // 2] > search_target :
-            end = (start + end) // 2
-            continue
-        elif parts_stock[(start + end) // 2] < search_target :
-            start = (start + end) // 2
-            continue
-        elif parts_stock[(start + end) // 2] == search_target :
+def solution(n, n_arr, m, m_arr) :
+    result = []
+    n_arr.sort()
+    for element in m_arr :
+        searched = binary_search(0, n-1, element, n_arr)
+        if searched : # if searched != None
             result.append("yes")
-            break
+        else :
+            result.append("no")
+    
+    return result
+
+print(solution(5, [8,3,7,9,2], 3, [5,7,9]))
